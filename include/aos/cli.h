@@ -6,8 +6,8 @@
 #define AOS_CLI_H
 
 #define MAX_COMMANDS 64
-#define INBUF_SIZE   256
-#define OUTBUF_SIZE  2048
+#define INBUF_SIZE   64
+#define OUTBUF_SIZE  128
 #define HIS_SIZE     5
 
 #define CLI_MAX_ARG_NUM    16

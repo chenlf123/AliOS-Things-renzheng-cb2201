@@ -84,7 +84,7 @@
 #endif
 
 #ifndef RHINO_CONFIG_GCC_RETADDR
-#define RHINO_CONFIG_GCC_RETADDR             0
+#define RHINO_CONFIG_GCC_RETADDR             1
 #endif
 
 #ifndef RHINO_CONFIG_MM_LEAKCHECK
