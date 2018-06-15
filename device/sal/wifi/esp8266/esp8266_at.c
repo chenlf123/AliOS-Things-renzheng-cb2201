@@ -643,7 +643,7 @@ static int read_esp8266_one_line(char *line, int nbytes)
 
     return line_len;
 }
-int recv_buf[2048];
+char recv_buf[2048];
 static int process_at_resp_event(char *line, int line_len, rdata_cb recv_handle_cb)
 {
     int data_len = 0;
