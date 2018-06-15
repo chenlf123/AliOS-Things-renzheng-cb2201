@@ -419,10 +419,6 @@ void *k_mm_alloc(k_mm_head *mmhead, size_t size)
         return NULL;
     }
 
-if(size > 4413) 
-{
-    asm("bkpt");
-}
     MM_CRITICAL_ENTER(mmhead);
     
 #if (RHINO_CONFIG_MM_BLK > 0)
@@ -504,6 +500,10 @@ if(size > 4413)
 ALLOCEXIT:
 
     MM_CRITICAL_EXIT(mmhead);
+
+    if (retptr == NULL) {
+        printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! k_mm_alloc failed, size = %d\n", size);
+    }
 
     return retptr ;
 }
