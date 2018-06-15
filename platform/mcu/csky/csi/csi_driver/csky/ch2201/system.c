@@ -60,6 +60,8 @@ void SystemCoreClockUpdate(void)
   */
 __attribute__((weak)) void SystemInit(void)
 {
+    ck_set_sys_freq(1, 5);
+
     /* Here we may setting exception vector, MGU, cache, and so on. */
     __set_VBR((uint32_t) & (__Vectors));
 
