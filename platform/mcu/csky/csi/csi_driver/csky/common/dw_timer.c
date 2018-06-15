@@ -50,7 +50,7 @@ typedef struct {
 extern int32_t target_get_timer_count(void);
 extern int32_t target_get_timer(int32_t idx, uint32_t *base, uint32_t *irq);
 
-static dw_timer_priv_t timer_instance[CONFIG_TIMER_NUM];
+//static dw_timer_priv_t timer_instance[CONFIG_TIMER_NUM];
 /**
   \brief      Make all the timers in the idle state.
   \param[in]  pointer to timer register base
@@ -65,16 +65,16 @@ static void timer_deactive_control(dw_timer_reg_t *addr)
 
 void dw_timer_irqhandler(int idx)
 {
-    dw_timer_priv_t *timer_priv = &timer_instance[idx];
-    timer_priv->timeout_flag = 1;
-
-    dw_timer_reg_t *addr = (dw_timer_reg_t *)(timer_priv->base);
-
-    addr->TxEOI;
-
-    if (timer_priv->cb_event) {
-        return timer_priv->cb_event(idx, TIMER_EVENT_TIMEOUT);
-    }
+//    dw_timer_priv_t *timer_priv = &timer_instance[idx];
+//    timer_priv->timeout_flag = 1;
+//
+//    dw_timer_reg_t *addr = (dw_timer_reg_t *)(timer_priv->base);
+//
+//    addr->TxEOI;
+//
+//    if (timer_priv->cb_event) {
+//        return timer_priv->cb_event(idx, TIMER_EVENT_TIMEOUT);
+//    }
 
 }
 
@@ -86,38 +86,38 @@ void dw_timer_irqhandler(int idx)
 */
 timer_handle_t csi_timer_initialize(int32_t idx, timer_event_cb_t cb_event)
 {
-    if (idx < 0 || idx >= CONFIG_TIMER_NUM) {
-        return NULL;
-    }
-
-    uint32_t base = 0u;
-    uint32_t irq = 0u;
-
-    int32_t real_idx = target_get_timer(idx, &base, &irq);
-
-    if (real_idx != idx) {
-        return NULL;
-    }
-
-    dw_timer_priv_t *timer_priv = &timer_instance[idx];
-    timer_priv->base = base;
-    timer_priv->irq  = irq;
-
-    dw_timer_reg_t *addr = (dw_timer_reg_t *)(timer_priv->base);
-    timer_priv->timeout = DW_TIMER_INIT_DEFAULT_VALUE;
-
-    timer_deactive_control(addr);
-    timer_priv->cb_event = cb_event;
-
-    if (cb_event != NULL) {
-#if defined CONFIG_CHIP_SH810 || defined CONFIG_CHIP_SH807 || defined CONFIG_CHIP_SH610 || defined CONFIG_CHIP_SH610M
-        csi_intc_enable_irq(timer_priv->irq);
-#else
-        csi_vic_enable_irq(timer_priv->irq);
-#endif
-    }
-
-    return (timer_handle_t)timer_priv;
+//    if (idx < 0 || idx >= CONFIG_TIMER_NUM) {
+//        return NULL;
+//    }
+//
+//    uint32_t base = 0u;
+//    uint32_t irq = 0u;
+//
+//    int32_t real_idx = target_get_timer(idx, &base, &irq);
+//
+//    if (real_idx != idx) {
+//        return NULL;
+//    }
+//
+//    dw_timer_priv_t *timer_priv = &timer_instance[idx];
+//    timer_priv->base = base;
+//    timer_priv->irq  = irq;
+//
+//    dw_timer_reg_t *addr = (dw_timer_reg_t *)(timer_priv->base);
+//    timer_priv->timeout = DW_TIMER_INIT_DEFAULT_VALUE;
+//
+//    timer_deactive_control(addr);
+//    timer_priv->cb_event = cb_event;
+//
+//    if (cb_event != NULL) {
+//#if defined CONFIG_CHIP_SH810 || defined CONFIG_CHIP_SH807 || defined CONFIG_CHIP_SH610 || defined CONFIG_CHIP_SH610M
+//        csi_intc_enable_irq(timer_priv->irq);
+//#else
+//        csi_vic_enable_irq(timer_priv->irq);
+//#endif
+//    }
+//
+//    return (timer_handle_t)timer_priv;
 }
 
 /**

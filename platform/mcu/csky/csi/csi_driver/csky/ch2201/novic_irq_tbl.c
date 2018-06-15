@@ -43,7 +43,7 @@ extern void ADC_IRQHandler(void);
 extern void I2S_IRQHandler(void);
 extern void DMAC0_IRQHandler(void);
 
-void (*g_irqvector[])(void) = {
+const void const __attribute__((section(".rodata")))(*g_irqvector[])(void) = {
     GPIO0_IRQHandler, /* 0, default interrupt entry */
     CORET_IRQHandler,  /* 1, default interrupt entry */
     TIMA0_IRQHandler, /* 2, default interrupt entry */

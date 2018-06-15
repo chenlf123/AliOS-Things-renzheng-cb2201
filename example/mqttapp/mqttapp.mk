@@ -11,7 +11,7 @@ $(NAME)_SOURCES     := mqtt-example.c
 endif
 
 #$(NAME)_COMPONENTS += connectivity.mqtt
-$(NAME)_COMPONENTS := cli  protocol.linkkit.iotkit  connectivity.mqtt cjson fota netmgr framework.common 
+$(NAME)_COMPONENTS := cli  protocol.linkkit.iotkit  connectivity.mqtt cjson netmgr framework.common 
 
 LWIP := 0
 ifeq ($(LWIP),1)
