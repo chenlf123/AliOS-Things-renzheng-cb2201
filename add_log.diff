@@ -1,0 +1,30 @@
+diff --git a/device/sal/sal_sockets.c b/device/sal/sal_sockets.c
+index ef54fff..ba62916 100644
+--- a/device/sal/sal_sockets.c
++++ b/device/sal/sal_sockets.c
+@@ -893,7 +893,10 @@ static err_t salnetconn_recv_data(sal_netconn_t *conn, sal_netbuf_t **new_buf)
+         return ERR_CONN;
+     }
+ 
++    printf("fetch before\n");
+     ret = sal_arch_mbox_fetch(&conn->recvmbox, &buf, conn->recv_timeout);
++    printf("fetch ok ret=%d\n", ret);
++
+     if (ret == SAL_ARCH_TIMEOUT){
+         SAL_ERROR("sal recv data time out, socket %d conn %p timeout %d\n", conn->socket, conn, conn->recv_timeout);
+         return ERR_TIMEOUT;
+@@ -1464,8 +1467,12 @@ static int salnetconn_packet_input(sal_netconn_t *conn, void *data, size_t len,
+         ipstr_to_u32(remote_ip, &buf->addr.u_addr.ip4.addr);
+     }
+     buf->port = remote_port;
+-    
+-    if(sal_mbox_trypost(&conn->recvmbox, buf) != ERR_OK){
++
++    printf("try postbefore\n");
++    int rets = sal_mbox_trypost(&conn->recvmbox, buf);
++    printf("try post retss = %d\n", rets);
++
++    if(rets != ERR_OK){
+         aos_free(buf->payload);
+         aos_free(buf);
+         SAL_ERROR("try post recv packet fail \n");

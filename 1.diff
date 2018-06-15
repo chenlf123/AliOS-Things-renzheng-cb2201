@@ -1,0 +1,15 @@
+diff --git a/framework/protocol/linkkit/iotkit/sdk-encap/imports/iot_import_product.h b/framework/protocol/linkkit/iotkit/sdk-encap/imports/iot_import_product.h
+index db59416..6f6d02a 100755
+--- a/framework/protocol/linkkit/iotkit/sdk-encap/imports/iot_import_product.h
++++ b/framework/protocol/linkkit/iotkit/sdk-encap/imports/iot_import_product.h
+@@ -48,6 +48,10 @@
+ #define DEVICE_NAME             "TestDeviceForDemo"
+ #define DEVICE_SECRET           "fSCl9Ns5YPnYN8Ocg0VEel1kXFnRlV6c"
+ #define PRODUCT_SECRET          ""
++//#define PRODUCT_KEY             "a1Q4zpks0ox"
++//#define DEVICE_NAME             "test_device"
++//#define DEVICE_SECRET           "XKdnDCdQdVYRdJBK5mNy8NTlQETOurZy"
++//#define PRODUCT_SECRET          ""
+ #else
+ #define PRODUCT_KEY             "a1AzoSi5TMc"
+ #define PRODUCT_SECRET          "Z9Ze6qgMrWgTOezW"

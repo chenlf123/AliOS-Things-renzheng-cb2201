@@ -1,0 +1,10 @@
+#set remotetimeout 20i
+#target jtag jtag://192.168.103.60:1025
+target jtag jtag://192.168.200.1:1025
+set *0x50006004=0x40000
+set *0x4000202c=0xc0206
+set *0x40002004=0x8
+
+set $pc =0x10005800
+set $psr=0xc0000000
+

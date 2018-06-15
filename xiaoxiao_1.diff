@@ -1,0 +1,31 @@
+diff --git a/device/sal/wifi/esp8266/esp8266_at.c b/device/sal/wifi/esp8266/esp8266_at.c
+index c6d4562..347ad99 100755
+--- a/device/sal/wifi/esp8266/esp8266_at.c
++++ b/device/sal/wifi/esp8266/esp8266_at.c
+@@ -679,7 +679,7 @@ static int process_at_resp_event(char *line, int line_len, rdata_cb recv_handle_
+ 
+         //memcpy data to app_buf
+         //LOGD(TAG, "id = %d, prefix =%d, data_len =%d", id, prefix_len, data_len);
+-        LOGD(TAG, "+IPD,%d,%d:\n", id, data_len);
++        LOGI(TAG, "+IPD,%d,%d:\n", id, data_len);
+ 
+         recvdata = (char *)aos_malloc(data_len + 1);
+ 
+@@ -1183,7 +1183,7 @@ static int handle_at_cmd(netm_msg_t *msg)
+         }
+     }
+ 
+-    LOGD(TAG, "write_cmd: %s", g_send_cmd);
++    LOGI(TAG, "write_cmd: %s", g_send_cmd);
+ 
+     if (netm_uart_write(g_send_cmd, cmd_len) > 0) {
+         csi_kernel_timer_start(timer_atmsg, csi_kernel_ms2tick(msg->timeout));  //start timer
+@@ -1213,7 +1213,7 @@ static int handle_at_response(netm_msg_t *msg)
+         if (strstr(line, "+IPD")) {
+             process_at_resp_event(line, line_len, g_rdata_handle);
+         } else {
+-            LOGD(TAG, "read lines {%s}\n", line);
++            LOGI(TAG, "read lines {%s}\n", line);
+             process_at_resp_cmd(line, line_len);
+         }
+ 

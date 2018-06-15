@@ -1,0 +1,100 @@
+diff --git a/board/cb2201/gcc_csky.ld b/board/cb2201/gcc_csky.ld
+index 9e4b687..83fb759 100755
+--- a/board/cb2201/gcc_csky.ld
++++ b/board/cb2201/gcc_csky.ld
+@@ -40,7 +40,6 @@ SECTIONS
+  .text : AT(ADDR(.text)){
+   . = ALIGN(0x4) ;
+   *startup.o(*.text)
+-  *startup.o(.vectors)
+   __stext = . ;
+   *(.text)
+   *(.text*)
+@@ -90,6 +89,7 @@ SECTIONS
+   __sdata = . ;
+   __data_start__ = . ;
+   data_start = . ;
++  *startup.o(.vectors)
+   *(.got.plt)
+   *(.got)
+   *(.gnu.linkonce.r*)
+diff --git a/platform/mcu/csky/csi/csi_driver/csky/ch2201/include/soc.h b/platform/mcu/csky/csi/csi_driver/csky/ch2201/include/soc.h
+index 03924dd..a8abffe 100644
+--- a/platform/mcu/csky/csi/csi_driver/csky/ch2201/include/soc.h
++++ b/platform/mcu/csky/csi/csi_driver/csky/ch2201/include/soc.h
+@@ -31,11 +31,11 @@ extern "C" {
+ #endif
+ 
+ #ifndef SYSTEM_CLOCK
+-#define  SYSTEM_CLOCK    (24000000)
++#define  SYSTEM_CLOCK    (48000000)
+ #endif
+ 
+ #ifndef LSP_DEFAULT_FREQ
+-#define  LSP_DEFAULT_FREQ    (24000000)
++#define  LSP_DEFAULT_FREQ    (48000000)
+ #endif
+ 
+ /* -------------------------  Interrupt Number Definition  ------------------------ */
+diff --git a/platform/mcu/csky/csi/csi_driver/csky/ch2201/startup.S b/platform/mcu/csky/csi/csi_driver/csky/ch2201/startup.S
+index d3fda89..efa1f5a 100644
+--- a/platform/mcu/csky/csi/csi_driver/csky/ch2201/startup.S
++++ b/platform/mcu/csky/csi/csi_driver/csky/ch2201/startup.S
+@@ -195,6 +195,7 @@ Reset_Handler:
+     stw     r1, (r0, 0x34)
+ 
+ .LSetClk:
++#if 0
+     /* set clk 24MHz */
+     lrw     r0, PMU_PLL_CTRL
+     lrw     r1, 0xc0206
+@@ -213,6 +214,7 @@ Reset_Handler:
+     lrw     r0, PMU_MCLK_SEL
+     movi    r1, 0x8
+     stw     r1, (r0)
++#endif
+ 
+     /* Enable instruction cache */
+     lrw     r0, 0xe000f000   /* Cache register base address */
+@@ -225,14 +227,6 @@ Reset_Handler:
+ 
+     /* under normal circumstances,  it should not be opened */
+ 
+-#ifndef CONFIG_SYSTEM_SECURE
+-    lrw     r0, 0x80000000
+-    mtcr    r0, psr
+-#else
+-    lrw     r0, 0xe0000000
+-    mtcr    r0, psr
+-#endif
+-
+ /* Initialize the normal stack pointer from the linker definition. */
+     lrw     a1, g_top_irqstack
+     mov     sp, a1
+@@ -296,6 +290,14 @@ Reset_Handler:
+     jbsr    board_init
+ #endif
+ 
++#ifndef CONFIG_SYSTEM_SECURE
++    lrw     r0, 0x80000000
++    mtcr    r0, psr
++#else
++    lrw     r0, 0xe0000000
++    mtcr    r0, psr
++#endif
++
+     jbsr    main
+ 
+     .size   Reset_Handler, . - Reset_Handler
+diff --git a/platform/mcu/csky/csi/csi_driver/csky/ch2201/system.c b/platform/mcu/csky/csi/csi_driver/csky/ch2201/system.c
+index 0497c98..ef6d669 100644
+--- a/platform/mcu/csky/csi/csi_driver/csky/ch2201/system.c
++++ b/platform/mcu/csky/csi/csi_driver/csky/ch2201/system.c
+@@ -60,6 +60,7 @@ void SystemCoreClockUpdate(void)
+   */
+ __attribute__((weak)) void SystemInit(void)
+ {
++    ck_set_sys_freq(1, 5);
+     /* Here we may setting exception vector, MGU, cache, and so on. */
+     __set_VBR((uint32_t) & (__Vectors));
+ 

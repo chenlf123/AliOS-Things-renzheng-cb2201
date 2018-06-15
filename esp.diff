@@ -1,0 +1,24 @@
+diff --git a/device/sal/wifi/esp8266/esp8266.c b/device/sal/wifi/esp8266/esp8266.c
+index 50561dc..4a9015a 100755
+--- a/device/sal/wifi/esp8266/esp8266.c
++++ b/device/sal/wifi/esp8266/esp8266.c
+@@ -305,6 +305,7 @@ static int esp8266_wifi_module_send(int fd, uint8_t *data, uint32_t len,
+ {
+     int  linkid;
+     int  ret = -1;
++    int  retry = 0;
+ 
+     if (!inited) {
+         LOGE(TAG, "%s esp8266 wifi module haven't init yet \r\n", __func__);
+@@ -318,7 +319,10 @@ static int esp8266_wifi_module_send(int fd, uint8_t *data, uint32_t len,
+         return -1;
+     }
+ 
+-    ret = netm_mux_send(linkid, data, len);
++    do{
++      ret = netm_mux_send(linkid, data, len);
++      retry++;
++    } while(ret != 0 || (retry < 3));
+ 
+     if (ret < 0) {
+         LOGE(TAG, "%s esp8266 wifi module send fail\r\n", __func__);
