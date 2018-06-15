@@ -58,7 +58,7 @@ typedef struct  {
     int32_t dma_rx_id;
 } ck_i2s_priv_t;
 
-static ck_i2s_priv_t i2s_instance[CONFIG_I2S_NUM];
+//static ck_i2s_priv_t i2s_instance[CONFIG_I2S_NUM];
 
 static const i2s_capabilities_t i2s_capabilities = {
     .asynchronous       = 1,    //supports asynchronous Transmit/Receive
@@ -451,25 +451,25 @@ void ck_i2s_intr_fifo_error(ck_i2s_priv_t *i2s_priv, uint32_t intr)
 */
 void ck_i2s_irqhandler(int32_t idx)
 {
-    ck_i2s_priv_t *i2s_priv = &i2s_instance[idx];;
-    ck_i2s_reg_t *addr = (ck_i2s_reg_t *)(i2s_priv->base);
-
-    uint32_t intr = addr->I2S_ISR;
-    addr->I2S_FICR = intr;
-
-    /* deal with receive FIFO full interrupt */
-    if (intr & I2SFICR_RXFIC) {
-        ck_i2s_intr_rx_full(i2s_priv);
-    }
-
-    /* deal with transmit FIFO empty interrupt */
-    if (intr & I2SFICR_TXEC) {
-        ck_i2s_intr_tx_empty(i2s_priv);
-    }
-
-    if (intr & (I2SFICR_RXIOC | I2SFICR_RXUIC | I2SFICR_TXOIC)) {
-        ck_i2s_intr_fifo_error(i2s_priv, intr);
-    }
+//    ck_i2s_priv_t *i2s_priv = &i2s_instance[idx];;
+//    ck_i2s_reg_t *addr = (ck_i2s_reg_t *)(i2s_priv->base);
+//
+//    uint32_t intr = addr->I2S_ISR;
+//    addr->I2S_FICR = intr;
+//
+//    /* deal with receive FIFO full interrupt */
+//    if (intr & I2SFICR_RXFIC) {
+//        ck_i2s_intr_rx_full(i2s_priv);
+//    }
+//
+//    /* deal with transmit FIFO empty interrupt */
+//    if (intr & I2SFICR_TXEC) {
+//        ck_i2s_intr_tx_empty(i2s_priv);
+//    }
+//
+//    if (intr & (I2SFICR_RXIOC | I2SFICR_RXUIC | I2SFICR_TXOIC)) {
+//        ck_i2s_intr_fifo_error(i2s_priv, intr);
+//    }
 }
 
 /**
@@ -479,31 +479,31 @@ void ck_i2s_irqhandler(int32_t idx)
 */
 i2s_handle_t csi_i2s_initialize(int32_t idx, i2s_event_cb_t cb_event)
 {
-    uint32_t base = 0u;
-    uint32_t irq = 0u;
-
-    int32_t ret = target_i2s_init(idx, &base, &irq);
-
-    if (ret < 0 || ret >= CONFIG_I2S_NUM) {
-        return NULL;
-    }
-
-    ck_i2s_priv_t *i2s_priv = &i2s_instance[idx];
-    i2s_priv->base = base;
-    i2s_priv->irq  = irq;
-    i2s_priv->idx  = idx;
-
-    i2s_priv->cb_event = cb_event;
-    i2s_priv->status = 0;
-    ck_i2s_reg_t *addr = (ck_i2s_reg_t *)(i2s_priv->base);
-    addr->I2S_AUDIOEN &= ~AUDIOEN_IIS_EN;   /* i2s disable */
-    addr->I2S_FSSTA = 0x0;
-    addr->I2S_FUNCMODE = 0x2;
-    /* enable error interrupte : receive fifo overflow, receive fifo underflow, transmit fifo overflow*/
-    addr->I2S_IMR = I2SIMR_DEFAULT_MASK;
-
-    csi_vic_enable_irq(i2s_priv->irq);
-    return i2s_priv;
+//    uint32_t base = 0u;
+//    uint32_t irq = 0u;
+//
+//    int32_t ret = target_i2s_init(idx, &base, &irq);
+//
+//    if (ret < 0 || ret >= CONFIG_I2S_NUM) {
+//        return NULL;
+//    }
+//
+//    ck_i2s_priv_t *i2s_priv = &i2s_instance[idx];
+//    i2s_priv->base = base;
+//    i2s_priv->irq  = irq;
+//    i2s_priv->idx  = idx;
+//
+//    i2s_priv->cb_event = cb_event;
+//    i2s_priv->status = 0;
+//    ck_i2s_reg_t *addr = (ck_i2s_reg_t *)(i2s_priv->base);
+//    addr->I2S_AUDIOEN &= ~AUDIOEN_IIS_EN;   /* i2s disable */
+//    addr->I2S_FSSTA = 0x0;
+//    addr->I2S_FUNCMODE = 0x2;
+//    /* enable error interrupte : receive fifo overflow, receive fifo underflow, transmit fifo overflow*/
+//    addr->I2S_IMR = I2SIMR_DEFAULT_MASK;
+//
+//    csi_vic_enable_irq(i2s_priv->irq);
+//    return i2s_priv;
 }
 
 /**

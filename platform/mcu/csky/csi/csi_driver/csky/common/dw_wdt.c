@@ -64,7 +64,7 @@ typedef struct {
 extern int32_t target_get_wdt_count(void);
 extern int32_t target_get_wdt(int32_t idx, uint32_t *base, uint32_t *irq);
 
-static dw_wdt_priv_t wdt_instance[CONFIG_WDT_NUM];
+//static dw_wdt_priv_t wdt_instance[CONFIG_WDT_NUM];
 
 static inline void dw_wdt_enable(dw_wdt_reg_t *addr)
 {
@@ -83,14 +83,14 @@ static inline void dw_wdt_disable(dw_wdt_reg_t *addr)
 
 void dw_wdt_irqhandler(int32_t idx)
 {
-    dw_wdt_priv_t *wdt_priv = &wdt_instance[idx];
-    dw_wdt_reg_t *addr = (dw_wdt_reg_t *)(wdt_priv->base);
-
-    addr->WDT_EOI;
-
-    if (wdt_priv->cb_event) {
-        wdt_priv->cb_event(idx, WDT_EVENT_TIMEOUT);
-    }
+//    dw_wdt_priv_t *wdt_priv = &wdt_instance[idx];
+//    dw_wdt_reg_t *addr = (dw_wdt_reg_t *)(wdt_priv->base);
+//
+//    addr->WDT_EOI;
+//
+//    if (wdt_priv->cb_event) {
+//        wdt_priv->cb_event(idx, WDT_EVENT_TIMEOUT);
+//    }
 }
 
 /**
@@ -101,27 +101,27 @@ void dw_wdt_irqhandler(int32_t idx)
 */
 wdt_handle_t csi_wdt_initialize(int32_t idx, wdt_event_cb_t cb_event)
 {
-    if (idx < 0 || idx >= CONFIG_WDT_NUM) {
-        return NULL;
-    }
-
-    uint32_t base = 0u;
-    uint32_t irq = 0u;
-
-    int32_t real_idx = target_get_wdt(idx, &base, &irq);
-
-    if (real_idx != idx) {
-        return NULL;
-    }
-
-    dw_wdt_priv_t *wdt_priv = &wdt_instance[idx];
-    wdt_priv->base = base;
-    wdt_priv->irq  = irq;
-
-    wdt_priv->cb_event = cb_event;
-    csi_vic_enable_irq(wdt_priv->irq);
-
-    return (wdt_handle_t)wdt_priv;
+//    if (idx < 0 || idx >= CONFIG_WDT_NUM) {
+//        return NULL;
+//    }
+//
+//    uint32_t base = 0u;
+//    uint32_t irq = 0u;
+//
+//    int32_t real_idx = target_get_wdt(idx, &base, &irq);
+//
+//    if (real_idx != idx) {
+//        return NULL;
+//    }
+//
+//    dw_wdt_priv_t *wdt_priv = &wdt_instance[idx];
+//    wdt_priv->base = base;
+//    wdt_priv->irq  = irq;
+//
+//    wdt_priv->cb_event = cb_event;
+//    csi_vic_enable_irq(wdt_priv->irq);
+//
+//    return (wdt_handle_t)wdt_priv;
 }
 
 /**

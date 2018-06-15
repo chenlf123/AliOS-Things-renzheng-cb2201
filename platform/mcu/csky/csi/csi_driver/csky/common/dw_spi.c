@@ -74,7 +74,7 @@ typedef struct {
 
 extern int32_t target_spi_init(int32_t idx, uint32_t *base, uint32_t *irq, uint32_t *ssel);
 
-static dw_spi_priv_t spi_instance[CONFIG_SPI_NUM];
+//static dw_spi_priv_t spi_instance[CONFIG_SPI_NUM];
 static gpio_pin_handle_t   pgpio_pin_handle;
 
 static const spi_capabilities_t spi_capabilities = {
@@ -121,52 +121,52 @@ static int32_t dw_spi_set_mode(spi_handle_t handle, DWENUM_SPI_MODE mode);
 
 void dw_spi_dma_event_cb(int32_t ch, dma_event_e event)
 {
-    dw_spi_priv_t *spi_priv = NULL;
-
-    uint8_t i = 0u;
-
-    for (i = 0; i < CONFIG_SPI_NUM; i++) { /* find the SPI id */
-        spi_priv = &spi_instance[i];
-
-        if ((spi_priv->dma_tx_id == ch) || (spi_priv->dma_rx_id == ch)) {
-            break;
-        }
-    }
-
-
-    if (spi_priv->dma_tx_id == ch) {
-        spi_priv->dma_tx_id = -1;
-    } else {
-        spi_priv->dma_rx_id = -1;
-    }
-
-    if (event == DMA_EVENT_TRANSFER_ERROR) {           /* DMA transfer ERROR */
-
-        if (spi_priv->cb_event) {
-            spi_priv->cb_event(spi_priv->idx, SPI_EVENT_DATA_LOST);
-        }
-    } else if (event == DMA_EVENT_TRANSFER_DONE) {  /* DMA transfer complete */
-
-        if (spi_priv->mode == DWENUM_SPI_TXRX) {
-            if (spi_priv->cb_event) {
-                spi_priv->cb_event(spi_priv->idx, SPI_EVENT_TRANSFER_COMPLETE);
-            }
-        } else if (spi_priv->mode == DWENUM_SPI_TX) {
-            dw_spi_reg_t *addr = (dw_spi_reg_t *)(spi_priv->base);
-
-            while (addr->SR & DW_SPI_DISABLE);
-
-            if (spi_priv->cb_event) {
-                spi_priv->cb_event(spi_priv->idx, SPI_EVENT_TX_COMPLETE);
-            }
-        } else {
-            if (spi_priv->cb_event) {
-                spi_priv->cb_event(spi_priv->idx, SPI_EVENT_RX_COMPLETE);
-            }
-        }
-    }
-
-    spi_priv->status.busy = 0U;
+//    dw_spi_priv_t *spi_priv = NULL;
+//
+//    uint8_t i = 0u;
+//
+//    for (i = 0; i < CONFIG_SPI_NUM; i++) { /* find the SPI id */
+//        spi_priv = &spi_instance[i];
+//
+//        if ((spi_priv->dma_tx_id == ch) || (spi_priv->dma_rx_id == ch)) {
+//            break;
+//        }
+//    }
+//
+//
+//    if (spi_priv->dma_tx_id == ch) {
+//        spi_priv->dma_tx_id = -1;
+//    } else {
+//        spi_priv->dma_rx_id = -1;
+//    }
+//
+//    if (event == DMA_EVENT_TRANSFER_ERROR) {           /* DMA transfer ERROR */
+//
+//        if (spi_priv->cb_event) {
+//            spi_priv->cb_event(spi_priv->idx, SPI_EVENT_DATA_LOST);
+//        }
+//    } else if (event == DMA_EVENT_TRANSFER_DONE) {  /* DMA transfer complete */
+//
+//        if (spi_priv->mode == DWENUM_SPI_TXRX) {
+//            if (spi_priv->cb_event) {
+//                spi_priv->cb_event(spi_priv->idx, SPI_EVENT_TRANSFER_COMPLETE);
+//            }
+//        } else if (spi_priv->mode == DWENUM_SPI_TX) {
+//            dw_spi_reg_t *addr = (dw_spi_reg_t *)(spi_priv->base);
+//
+//            while (addr->SR & DW_SPI_DISABLE);
+//
+//            if (spi_priv->cb_event) {
+//                spi_priv->cb_event(spi_priv->idx, SPI_EVENT_TX_COMPLETE);
+//            }
+//        } else {
+//            if (spi_priv->cb_event) {
+//                spi_priv->cb_event(spi_priv->idx, SPI_EVENT_RX_COMPLETE);
+//            }
+//        }
+//    }
+//
+//    spi_priv->status.busy = 0U;
 }
 
 /**
@@ -894,19 +894,19 @@ static void dw_spi_intr_tx_empty(int32_t idx, dw_spi_priv_t *spi_priv)
 */
 void dw_spi_irqhandler(int32_t idx)
 {
-    dw_spi_priv_t *spi_priv = &spi_instance[idx];
-    dw_spi_reg_t *addr = (dw_spi_reg_t *)(spi_priv->base);
-
-    uint32_t intr = addr->ISR;
-
-    /* deal with receive FIFO full interrupt */
-    if (intr & DW_SPI_RXFIFO_FULL) {
-        dw_spi_intr_rx_full(idx, spi_priv);
-    }
-    /* deal with transmit FIFO empty interrupt */
-    else if (intr & DW_SPI_TXFIFO_EMPTY) {
-        dw_spi_intr_tx_empty(idx, spi_priv);
-    }
+//    dw_spi_priv_t *spi_priv = &spi_instance[idx];
+//    dw_spi_reg_t *addr = (dw_spi_reg_t *)(spi_priv->base);
+//
+//    uint32_t intr = addr->ISR;
+//
+//    /* deal with receive FIFO full interrupt */
+//    if (intr & DW_SPI_RXFIFO_FULL) {
+//        dw_spi_intr_rx_full(idx, spi_priv);
+//    }
+//    /* deal with transmit FIFO empty interrupt */
+//    else if (intr & DW_SPI_TXFIFO_EMPTY) {
+//        dw_spi_intr_tx_empty(idx, spi_priv);
+//    }
 }
 
 /**
@@ -917,36 +917,36 @@ void dw_spi_irqhandler(int32_t idx)
 */
 spi_handle_t csi_spi_initialize(int32_t idx, spi_event_cb_t cb_event)
 {
-    uint32_t base = 0u;
-    uint32_t irq = 0u;
-    uint32_t ssel = 0u;
-
-    int32_t ret = target_spi_init(idx, &base, &irq, &ssel);
-
-    if (ret < 0 || ret >= CONFIG_SPI_NUM) {
-        return NULL;
-    }
-
-    dw_spi_priv_t *spi_priv = &spi_instance[idx];
-
-    spi_priv->base = base;
-    spi_priv->irq  = irq;
-    spi_priv->ssel = ssel;
-
-    spi_priv->cb_event          = cb_event;
-    spi_priv->status.busy       = 0U;
-    spi_priv->status.data_lost  = 0U;
-    spi_priv->status.mode_fault = 0U;
-    spi_priv->enable_slave      = 1U;
-    spi_priv->state             = SPI_INITIALIZED;
-
-    csi_vic_enable_irq(spi_priv->irq);
-#ifdef CONFIG_SPI_DMA
-    spi_priv->dma_handle = csi_dma_initialize(0);
-    spi_priv->idx  = idx;
-#endif
-
-    return (spi_handle_t)spi_priv;
+//    uint32_t base = 0u;
+//    uint32_t irq = 0u;
+//    uint32_t ssel = 0u;
+//
+//    int32_t ret = target_spi_init(idx, &base, &irq, &ssel);
+//
+//    if (ret < 0 || ret >= CONFIG_SPI_NUM) {
+//        return NULL;
+//    }
+//
+//    dw_spi_priv_t *spi_priv = &spi_instance[idx];
+//
+//    spi_priv->base = base;
+//    spi_priv->irq  = irq;
+//    spi_priv->ssel = ssel;
+//
+//    spi_priv->cb_event          = cb_event;
+//    spi_priv->status.busy       = 0U;
+//    spi_priv->status.data_lost  = 0U;
+//    spi_priv->status.mode_fault = 0U;
+//    spi_priv->enable_slave      = 1U;
+//    spi_priv->state             = SPI_INITIALIZED;
+//
+//    csi_vic_enable_irq(spi_priv->irq);
+//#ifdef CONFIG_SPI_DMA
+//    spi_priv->dma_handle = csi_dma_initialize(0);
+//    spi_priv->idx  = idx;
+//#endif
+//
+//    return (spi_handle_t)spi_priv;
 }
 
 /**

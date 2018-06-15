@@ -49,9 +49,10 @@ extern void mdelay(uint32_t ms);
 extern int32_t target_get_rtc_count(void);
 extern int32_t target_get_rtc(int32_t idx, uint32_t *base, uint32_t *irq);
 
-static ck_rtc_priv_t rtc_instance[CONFIG_RTC_NUM];
-static uint8_t leap_year[12] = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-static uint8_t noleap_year[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+//static ck_rtc_priv_t rtc_instance[CONFIG_RTC_NUM];
+//chenlf
+const static uint8_t leap_year[12] = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+const static uint8_t noleap_year[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 static const uint16_t g_noleap_daysbeforemonth[13] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365};
 //static const uint16_t g_leap_daysbeforemonth[13] = {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366};
 
@@ -417,14 +418,15 @@ static int32_t ck_rtc_int_disable(ck_rtc_reg_t *addr)
 
 void ck_rtc_irqhandler(int32_t idx)
 {
-    ck_rtc_priv_t *rtc_priv = &rtc_instance[idx];
-    ck_rtc_reg_t *addr = (ck_rtc_reg_t *)(rtc_priv->base);
-
-    addr->RTC_EOI;
-
-    if (rtc_priv->cb_event) {
-        rtc_priv->cb_event(idx, RTC_EVENT_TIMER_INTRERRUPT);
-    }
+//chenlf
+//    ck_rtc_priv_t *rtc_priv = &rtc_instance[idx];
+//    ck_rtc_reg_t *addr = (ck_rtc_reg_t *)(rtc_priv->base);
+//
+//    addr->RTC_EOI;
+//
+//    if (rtc_priv->cb_event) {
+//        rtc_priv->cb_event(idx, RTC_EVENT_TIMER_INTRERRUPT);
+//    }
 
 }
 
@@ -436,35 +438,36 @@ void ck_rtc_irqhandler(int32_t idx)
 */
 rtc_handle_t csi_rtc_initialize(int32_t idx, rtc_event_cb_t cb_event)
 {
-    if (idx < 0 || idx >= CONFIG_RTC_NUM) {
-        return NULL;
-    }
-
-    int32_t real_idx;
-    uint32_t base = 0u;
-    uint32_t irq;
-
-    real_idx = target_get_rtc(idx, &base, &irq);
-
-    if (real_idx != idx) {
-        return NULL;
-    }
-
-    ck_rtc_priv_t *rtc_priv;
-
-    rtc_priv = &rtc_instance[idx];
-    rtc_priv->base = base;
-    rtc_priv->irq  = irq;
-
-    ck_rtc_reg_t *addr = (ck_rtc_reg_t *)(rtc_priv->base);
-
-    rtc_priv->cb_event = cb_event;
-    addr->RTC_CCR = 0;
-    addr->RTC_EOI;
-    csi_vic_clear_pending_irq(rtc_priv->irq);
-    csi_vic_enable_irq(rtc_priv->irq);
-
-    return (rtc_handle_t)rtc_priv;
+//    if (idx < 0 || idx >= CONFIG_RTC_NUM) {
+//        return NULL;
+//    }
+//
+//    int32_t real_idx;
+//    uint32_t base = 0u;
+//    uint32_t irq;
+//
+//    real_idx = target_get_rtc(idx, &base, &irq);
+//
+//    if (real_idx != idx) {
+//        return NULL;
+//    }
+//
+//    ck_rtc_priv_t *rtc_priv;
+//
+////    rtc_priv = &rtc_instance[idx];
+////chenlf
+//    rtc_priv->base = base;
+//    rtc_priv->irq  = irq;
+//
+//    ck_rtc_reg_t *addr = (ck_rtc_reg_t *)(rtc_priv->base);
+//
+//    rtc_priv->cb_event = cb_event;
+//    addr->RTC_CCR = 0;
+//    addr->RTC_EOI;
+//    csi_vic_clear_pending_irq(rtc_priv->irq);
+//    csi_vic_enable_irq(rtc_priv->irq);
+//
+//    return (rtc_handle_t)rtc_priv;
 }
 
 /**

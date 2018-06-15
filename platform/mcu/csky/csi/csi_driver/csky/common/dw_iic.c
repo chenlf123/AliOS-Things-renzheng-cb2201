@@ -52,7 +52,7 @@ typedef struct  {
 
 extern int32_t target_iic_init(int32_t idx, uint32_t *base, uint32_t *irq);
 
-static dw_iic_priv_t iic_instance[CONFIG_IIC_NUM];
+//static dw_iic_priv_t iic_instance[CONFIG_IIC_NUM];
 
 static const iic_capabilities_t iic_capabilities = {
     .address_10_bit = 0  /* supports 10-bit addressing */
@@ -240,51 +240,51 @@ static void dw_iic_intr_rx_full(int32_t idx, dw_iic_priv_t *iic_priv, uint32_t i
 }
 void dw_iic_irqhandler(int32_t idx)
 {
-    dw_iic_priv_t *iic_priv = &iic_instance[idx];
-    dw_iic_reg_t *addr = (dw_iic_reg_t *)(iic_priv->base);
-
-    uint32_t  intr_stat = dw_iic_read_clear_intrbits(addr);
-
-    if (intr_stat & DW_IIC_INTR_TX_ABRT) {
-        /* If arbitration fault, it indicates either a slave device not
-        * responding as expected, or other master which is not supported
-        * by this SW.
-        */
-        iic_priv->status    = IIC_STATE_DONE;
-        dw_iic_disable(addr);
-        addr->IC_INTR_MASK = 0;
-        addr->IC_FIFO_RST_EN = DW_IIC_FIFO_RST_EN;
-
-        if (iic_priv->cb_event) {
-            iic_priv->cb_event(idx, IIC_EVENT_BUS_ERROR);
-            return;
-        }
-    }
-
-    switch (iic_priv->status) {
-            /* send data to slave */
-        case IIC_STATE_DATASEND: {
-            dw_iic_intr_tx_empty(idx, iic_priv, intr_stat);
-            break;
-        }
-
-        /* wait for data from slave */
-        case IIC_STATE_WFDATA: {
-            dw_iic_intr_rx_full(idx, iic_priv, intr_stat);
-            break;
-        }
-
-        /* unexpected state,SW fault */
-        default: {
-            addr->IC_FIFO_RST_EN = DW_IIC_FIFO_RST_EN;
-            addr->IC_INTR_MASK = 0;
-            dw_iic_disable(addr);
-
-            if (iic_priv->cb_event) {
-                iic_priv->cb_event(idx, IIC_EVENT_ARBITRATION_LOST);
-            }
-        }
-    }
+//    dw_iic_priv_t *iic_priv = &iic_instance[idx];
+//    dw_iic_reg_t *addr = (dw_iic_reg_t *)(iic_priv->base);
+//
+//    uint32_t  intr_stat = dw_iic_read_clear_intrbits(addr);
+//
+//    if (intr_stat & DW_IIC_INTR_TX_ABRT) {
+//        /* If arbitration fault, it indicates either a slave device not
+//        * responding as expected, or other master which is not supported
+//        * by this SW.
+//        */
+//        iic_priv->status    = IIC_STATE_DONE;
+//        dw_iic_disable(addr);
+//        addr->IC_INTR_MASK = 0;
+//        addr->IC_FIFO_RST_EN = DW_IIC_FIFO_RST_EN;
+//
+//        if (iic_priv->cb_event) {
+//            iic_priv->cb_event(idx, IIC_EVENT_BUS_ERROR);
+//            return;
+//        }
+//    }
+//
+//    switch (iic_priv->status) {
+//            /* send data to slave */
+//        case IIC_STATE_DATASEND: {
+//            dw_iic_intr_tx_empty(idx, iic_priv, intr_stat);
+//            break;
+//        }
+//
+//        /* wait for data from slave */
+//        case IIC_STATE_WFDATA: {
+//            dw_iic_intr_rx_full(idx, iic_priv, intr_stat);
+//            break;
+//        }
+//
+//        /* unexpected state,SW fault */
+//        default: {
+//            addr->IC_FIFO_RST_EN = DW_IIC_FIFO_RST_EN;
+//            addr->IC_INTR_MASK = 0;
+//            dw_iic_disable(addr);
+//
+//            if (iic_priv->cb_event) {
+//                iic_priv->cb_event(idx, IIC_EVENT_ARBITRATION_LOST);
+//            }
+//        }
+//    }
 }
 
 /**
@@ -296,38 +296,38 @@ void dw_iic_irqhandler(int32_t idx)
 */
 iic_handle_t csi_iic_initialize(int32_t idx, iic_event_cb_t cb_event)
 {
-    uint32_t base = 0u;
-    uint32_t irq = 0u;
-
-    int32_t ret = target_iic_init(idx, &base, &irq);
-
-    if (ret < 0 || ret >= CONFIG_IIC_NUM) {
-        return NULL;
-    }
-
-    dw_iic_priv_t *iic_priv = &iic_instance[idx];
-    iic_priv->base = base;
-    iic_priv->irq  = irq;
-
-
-    iic_priv->cb_event = cb_event;
-    iic_priv->rx_total_num = 0;
-    iic_priv->tx_total_num = 0;
-    iic_priv->rx_buf = NULL;
-    iic_priv->tx_buf = NULL;
-    iic_priv->rx_cnt = 0;
-    iic_priv->tx_cnt = 0;
-    iic_priv->status = 0;
-
-    dw_iic_reg_t *addr = (dw_iic_reg_t *)(iic_priv->base);
-
-    /* mask all interrupts */
-    addr->IC_INTR_MASK  = 0x00;
-    addr->IC_CON        = DW_IIC_CON_DEFAUL;
-
-    csi_vic_enable_irq(iic_priv->irq);
-
-    return iic_priv;
+//    uint32_t base = 0u;
+//    uint32_t irq = 0u;
+//
+//    int32_t ret = target_iic_init(idx, &base, &irq);
+//
+//    if (ret < 0 || ret >= CONFIG_IIC_NUM) {
+//        return NULL;
+//    }
+//
+//    dw_iic_priv_t *iic_priv = &iic_instance[idx];
+//    iic_priv->base = base;
+//    iic_priv->irq  = irq;
+//
+//
+//    iic_priv->cb_event = cb_event;
+//    iic_priv->rx_total_num = 0;
+//    iic_priv->tx_total_num = 0;
+//    iic_priv->rx_buf = NULL;
+//    iic_priv->tx_buf = NULL;
+//    iic_priv->rx_cnt = 0;
+//    iic_priv->tx_cnt = 0;
+//    iic_priv->status = 0;
+//
+//    dw_iic_reg_t *addr = (dw_iic_reg_t *)(iic_priv->base);
+//
+//    /* mask all interrupts */
+//    addr->IC_INTR_MASK  = 0x00;
+//    addr->IC_CON        = DW_IIC_CON_DEFAUL;
+//
+//    csi_vic_enable_irq(iic_priv->irq);
+//
+//    return iic_priv;
 }
 
 /**

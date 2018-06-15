@@ -41,7 +41,7 @@ typedef struct {
     uint32_t dst_tw;
 } dw_dma_priv_t;
 
-static dw_dma_priv_t dma_instance[CONFIG_DMAC_NUM];
+//static dw_dma_priv_t dma_instance[CONFIG_DMAC_NUM];
 
 static const dma_capabilities_t dma_capabilities = {
     .unalign_addr = 1,          ///< support for unalign address transfer when memory is source
@@ -162,53 +162,53 @@ static int dw_dma_assign_hdhs_interface(uint32_t addr, uint8_t ch, dwenum_dma_de
 
 void dw_dmac_irqhandler(int32_t idx)
 {
-    dw_dma_priv_t *dma_priv = &dma_instance[idx];
-    uint32_t addr = dma_priv->base;
-
-    /*
-     * StatusInt_temp contain the information that which types of interrupr are
-     * requested.
-     */
-    int32_t count = 0;
-    uint32_t temp = 0;
-
-    temp = readl(addr + DMA_REG_StatusTfr);
-
-    if (temp) {
-        for (count = 0; count < dma_priv->ch_num; count++) {
-            if (temp == (1 << count)) {
-                break;
-            }
-        }
-
-        dma_priv->status[count] = DMA_STATE_DONE;
-        writel(temp, addr + DMA_REG_ClearTfr);
-
-        if (dma_priv->cb_event) {
-            dma_priv->cb_event(count, DMA_EVENT_TRANSFER_DONE);
-        }
-
-        return;
-    }
-
-    temp = readl(addr + DMA_REG_StatusErr);
-
-    if (temp) {
-        for (count = 0; count < dma_priv->ch_num; count++) {
-            if (temp == (1 << count)) {
-                break;
-            }
-        }
-
-        dma_priv->status[count] = DMA_STATE_ERROR;
-        writel(temp, addr + DMA_REG_ClearTfr);
-
-        if (dma_priv->cb_event) {
-            dma_priv->cb_event(count, DMA_EVENT_TRANSFER_ERROR);
-        }
-
-        return;
-    }
+//    dw_dma_priv_t *dma_priv = &dma_instance[idx];
+//    uint32_t addr = dma_priv->base;
+//
+//    /*
+//     * StatusInt_temp contain the information that which types of interrupr are
+//     * requested.
+//     */
+//    int32_t count = 0;
+//    uint32_t temp = 0;
+//
+//    temp = readl(addr + DMA_REG_StatusTfr);
+//
+//    if (temp) {
+//        for (count = 0; count < dma_priv->ch_num; count++) {
+//            if (temp == (1 << count)) {
+//                break;
+//            }
+//        }
+//
+//        dma_priv->status[count] = DMA_STATE_DONE;
+//        writel(temp, addr + DMA_REG_ClearTfr);
+//
+//        if (dma_priv->cb_event) {
+//            dma_priv->cb_event(count, DMA_EVENT_TRANSFER_DONE);
+//        }
+//
+//        return;
+//    }
+//
+//    temp = readl(addr + DMA_REG_StatusErr);
+//
+//    if (temp) {
+//        for (count = 0; count < dma_priv->ch_num; count++) {
+//            if (temp == (1 << count)) {
+//                break;
+//            }
+//        }
+//
+//        dma_priv->status[count] = DMA_STATE_ERROR;
+//        writel(temp, addr + DMA_REG_ClearTfr);
+//
+//        if (dma_priv->cb_event) {
+//            dma_priv->cb_event(count, DMA_EVENT_TRANSFER_ERROR);
+//        }
+//
+//        return;
+//    }
 }
 
 int32_t __attribute__((weak)) target_get_dmac(uint32_t idx, uint32_t *base, uint32_t *irq)
@@ -223,39 +223,39 @@ int32_t __attribute__((weak)) target_get_dmac(uint32_t idx, uint32_t *base, uint
 */
 dmac_handle_t csi_dma_initialize(int32_t idx)
 {
-
-    if (idx < 0 || idx >= CONFIG_DMAC_NUM) {
-        return NULL;
-    }
-
-    uint32_t base = 0u;
-    uint32_t irq = 0u;
-
-    int32_t real_idx = target_get_dmac(idx, &base, &irq);
-
-    if (real_idx != idx) {
-        return NULL;
-    }
-
-    dw_dma_priv_t *dma_priv = &dma_instance[idx];
-
-    dma_priv->base = base;
-    dma_priv->irq  = irq;
-    dma_priv->ch_num = CK_DMA_MAXCHANNEL;
-    csi_vic_enable_irq(dma_priv->irq);
-
-    writel(CK_DMA_MASK, base + DMA_REG_MaskTfr);
-    writel(CK_DMA_MASK, base + DMA_REG_MaskErr);
-    writel(CK_DMA_MASK, base + DMA_REG_MaskBlock);
-    writel(CK_DMA_MASK, base + DMA_REG_MaskSrcTran);
-    writel(CK_DMA_MASK, base + DMA_REG_MaskDstTran);
-    writel(CK_DMA_INTC, base + DMA_REG_ClearTfr);
-    writel(CK_DMA_INTC, base + DMA_REG_ClearBlock);
-    writel(CK_DMA_INTC, base + DMA_REG_ClearErr);
-    writel(CK_DMA_INTC, base + DMA_REG_ClearSrcTran);
-    writel(CK_DMA_INTC, base + DMA_REG_ClearDstTran);
-
-    return (dmac_handle_t)dma_priv;
+//
+//    if (idx < 0 || idx >= CONFIG_DMAC_NUM) {
+//        return NULL;
+//    }
+//
+//    uint32_t base = 0u;
+//    uint32_t irq = 0u;
+//
+//    int32_t real_idx = target_get_dmac(idx, &base, &irq);
+//
+//    if (real_idx != idx) {
+//        return NULL;
+//    }
+//
+//    dw_dma_priv_t *dma_priv = &dma_instance[idx];
+//
+//    dma_priv->base = base;
+//    dma_priv->irq  = irq;
+//    dma_priv->ch_num = CK_DMA_MAXCHANNEL;
+//    csi_vic_enable_irq(dma_priv->irq);
+//
+//    writel(CK_DMA_MASK, base + DMA_REG_MaskTfr);
+//    writel(CK_DMA_MASK, base + DMA_REG_MaskErr);
+//    writel(CK_DMA_MASK, base + DMA_REG_MaskBlock);
+//    writel(CK_DMA_MASK, base + DMA_REG_MaskSrcTran);
+//    writel(CK_DMA_MASK, base + DMA_REG_MaskDstTran);
+//    writel(CK_DMA_INTC, base + DMA_REG_ClearTfr);
+//    writel(CK_DMA_INTC, base + DMA_REG_ClearBlock);
+//    writel(CK_DMA_INTC, base + DMA_REG_ClearErr);
+//    writel(CK_DMA_INTC, base + DMA_REG_ClearSrcTran);
+//    writel(CK_DMA_INTC, base + DMA_REG_ClearDstTran);
+//
+//    return (dmac_handle_t)dma_priv;
 }
 
 /**
