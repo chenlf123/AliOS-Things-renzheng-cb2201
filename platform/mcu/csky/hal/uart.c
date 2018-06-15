@@ -18,7 +18,7 @@
 #define STAT_XMIT_IDLE      0x00
 #define STAT_XMIT_READ      0x01
 #define STAT_XMIT_WRITE     0x02
-#define UART_FIFO_SIZE 256
+#define UART_FIFO_SIZE      60
 char console_uart_buf[UART_FIFO_SIZE];
 
 static ringbuffer_t g_uart_rb;
