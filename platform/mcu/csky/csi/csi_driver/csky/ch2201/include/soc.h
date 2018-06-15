@@ -248,23 +248,23 @@ typedef struct {
 
 #define CONFIG_CRC_NUM  1
 #define CONFIG_EFLASH_NUM  1
-#define CONFIG_IIC_NUM  2
+#define CONFIG_IIC_NUM  0
 #define CONFIG_TRNG_NUM 1
 #define CONFIG_AES_NUM  1
 #define CONFIG_RSA_NUM  1
 #define CONFIG_SHA_NUM  1
-#define CONFIG_SPI_NUM  2
-#define CONFIG_PWM_NUM  6
-#define CONFIG_TIMER_NUM 4
-#define CONFIG_RTC_NUM 2
-#define CONFIG_WDT_NUM 1
-#define CONFIG_DMAC_NUM 2
+#define CONFIG_SPI_NUM  0
+#define CONFIG_PWM_NUM  0
+#define CONFIG_TIMER_NUM 0
+#define CONFIG_RTC_NUM 0
+#define CONFIG_WDT_NUM 0
+#define CONFIG_DMAC_NUM 0
 #define CONFIG_GPIO_NUM            2
 #define CONFIG_GPIO_PIN_NUM        32
 #define CONFIG_USART_NUM 3
-#define CONFIG_ETH_NUM 2
-#define CONFIG_ADC_NUM 1
-#define CONFIG_I2S_NUM 1
+#define CONFIG_ETH_NUM 0
+#define CONFIG_ADC_NUM 0
+#define CONFIG_I2S_NUM 0
 
 /* ================================================================================ */
 /* ================              Peripheral memory map             ================ */
