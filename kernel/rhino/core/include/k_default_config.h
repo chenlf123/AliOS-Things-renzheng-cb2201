@@ -171,7 +171,7 @@
 #endif
 
 #ifndef RHINO_CONFIG_TIMER_MSG_NUM
-#define RHINO_CONFIG_TIMER_MSG_NUM           20
+#define RHINO_CONFIG_TIMER_MSG_NUM           5
 #endif
 
 /* kernel intrpt conf */
