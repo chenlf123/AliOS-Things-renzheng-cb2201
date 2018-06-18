@@ -1,0 +1,267 @@
+diff --git a/kernel/rhino/core/include/k_default_config.h b/kernel/rhino/core/include/k_default_config.h
+index c8ec4ab..8755931 100755
+--- a/kernel/rhino/core/include/k_default_config.h
++++ b/kernel/rhino/core/include/k_default_config.h
+@@ -80,11 +80,11 @@
+ #endif
+ 
+ #ifndef RHINO_CONFIG_MM_DEBUG
+-#define RHINO_CONFIG_MM_DEBUG                1
++#define RHINO_CONFIG_MM_DEBUG                0
+ #endif
+ 
+ #ifndef RHINO_CONFIG_GCC_RETADDR
+-#define RHINO_CONFIG_GCC_RETADDR             1
++#define RHINO_CONFIG_GCC_RETADDR             0
+ #endif
+ 
+ #ifndef RHINO_CONFIG_MM_LEAKCHECK
+diff --git a/kernel/rhino/core/include/k_mm.h b/kernel/rhino/core/include/k_mm.h
+index 1cbc181..adfa1d5 100755
+--- a/kernel/rhino/core/include/k_mm.h
++++ b/kernel/rhino/core/include/k_mm.h
+@@ -12,8 +12,8 @@
+ #define MM_ALIGN_BIT        3
+ #define MM_ALIGN_SIZE       (1<<MM_ALIGN_BIT)
+ #define MM_ALIGN_MASK       (MM_ALIGN_SIZE-1)
+-#define MM_ALIGN_UP(a)      (((a) + MM_ALIGN_MASK) & ~MM_ALIGN_MASK)
+-#define MM_ALIGN_DOWN(a)    ((a) & ~MM_ALIGN_MASK)
++#define MM_ALIGN_UP2(a)      (((a) + MM_ALIGN_MASK) & ~MM_ALIGN_MASK)
++#define MM_ALIGN_DOWN2(a)    ((a) & ~MM_ALIGN_MASK)
+ 
+ /* mm bitmask freelist: */
+ #define MM_MAX_BIT          RHINO_CONFIG_MM_MAXMSIZEBIT
+@@ -38,7 +38,7 @@
+ #define RHINO_MM_PREVFREE       2
+ #define RHINO_MM_PREVALLOCED    0
+ 
+-#define MMLIST_HEAD_SIZE        (MM_ALIGN_UP(sizeof(k_mm_list_t) -  sizeof(free_ptr_t)))
++#define MMLIST_HEAD_SIZE        (MM_ALIGN_UP2(sizeof(k_mm_list_t) -  sizeof(free_ptr_t)))
+ 
+ /* get buffer size */
+ #define MM_GET_BUF_SIZE(blk)    \
+diff --git a/kernel/rhino/core/k_mm.c b/kernel/rhino/core/k_mm.c
+index 801f93c..617f220 100755
+--- a/kernel/rhino/core/k_mm.c
++++ b/kernel/rhino/core/k_mm.c
+@@ -6,6 +6,10 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ 
++#include <mm.h>
++#include <umm_heap.h>
++#include <csi_kernel.h>
++
+ #if (RHINO_CONFIG_MM_TLF > 0)        
+ extern k_mm_region_t   g_mm_region[];
+ extern int             g_region_num;
+@@ -13,17 +17,17 @@ extern void aos_mm_leak_region_init(void);
+ 
+ void k_mm_init(void)
+ {
+-    uint32_t e = 0;
+-
+-    /* init memory region */
+-    krhino_init_mm_head(&g_kmm_head, g_mm_region[0].start, g_mm_region[0].len);
+-    for (e = 1 ; e < g_region_num ; e++) {
+-        krhino_add_mm_region(g_kmm_head, g_mm_region[e].start, g_mm_region[e].len);
+-    }
+-
+-#if (RHINO_CONFIG_MM_LEAKCHECK > 0 )
+-    aos_mm_leak_region_init();
+-#endif
++//    uint32_t e = 0;
++//
++//    /* init memory region */
++//    krhino_init_mm_head(&g_kmm_head, g_mm_region[0].start, g_mm_region[0].len);
++//    for (e = 1 ; e < g_region_num ; e++) {
++//        krhino_add_mm_region(g_kmm_head, g_mm_region[e].start, g_mm_region[e].len);
++//    }
++//
++//#if (RHINO_CONFIG_MM_LEAKCHECK > 0 )
++//    aos_mm_leak_region_init();
++//#endif
+ }
+ 
+ /* init a region, contain 3 mmblk
+@@ -759,6 +763,14 @@ void krhino_owner_attach(k_mm_head *mmhead, void *addr, size_t allocator)
+ 
+ void *krhino_mm_alloc(size_t size)
+ {
++    void *ret;
++
++    csi_kernel_sched_suspend();
++    ret = mm_malloc(USR_HEAP, size, __builtin_return_address(0));
++    csi_kernel_sched_resume(0);
++    return ret;
++
++#if 0
+     void *tmp;
+ 
+ #if (RHINO_CONFIG_MM_DEBUG > 0u && RHINO_CONFIG_GCC_RETADDR > 0u)
+@@ -803,15 +815,34 @@ void *krhino_mm_alloc(size_t size)
+ #endif
+ 
+     return tmp;
++#endif
+ }
+ 
+ void krhino_mm_free(void *ptr)
+ {
++    csi_kernel_sched_suspend();
++    mm_free(USR_HEAP, ptr, __builtin_return_address(0));
++    csi_kernel_sched_resume(0);
++
++#if 0
+     k_mm_free(g_kmm_head, ptr);
++#endif
+ }
+ 
+ void *krhino_mm_realloc(void *oldmem, size_t newsize)
+ {
++    void *new_ptr;
++
++    new_ptr = csi_kernel_malloc(newsize, __builtin_return_address(0));
++
++    if (oldmem) {
++        memcpy(new_ptr, oldmem, newsize);
++        csi_kernel_free(oldmem, __builtin_return_address(0));
++    }
++
++    return new_ptr;
++
++#if 0
+     void *tmp;
+ 
+ #if (RHINO_CONFIG_MM_DEBUG > 0u && RHINO_CONFIG_GCC_RETADDR > 0u)
+@@ -846,6 +877,7 @@ void *krhino_mm_realloc(void *oldmem, size_t newsize)
+ #endif
+     }
+     return tmp;
++#endif
+ }
+ 
+ #endif
+diff --git a/platform/mcu/csky/csi/csi_driver/csky/ch2201/system.c b/platform/mcu/csky/csi/csi_driver/csky/ch2201/system.c
+index aca662e..61f9bc3 100644
+--- a/platform/mcu/csky/csi/csi_driver/csky/ch2201/system.c
++++ b/platform/mcu/csky/csi/csi_driver/csky/ch2201/system.c
+@@ -76,10 +76,6 @@ __attribute__((weak)) void SystemInit(void)
+ 
+     SystemCoreClock = SYSTEM_CLOCK;
+ 
+-#ifndef CONFIG_KERNEL_RHINO
+-#ifndef CONFIG_NUTTXMM_NONE
+     extern void mm_heap_initialize(void);
+     mm_heap_initialize();
+-#endif
+-#endif
+ }
+diff --git a/platform/mcu/csky/csi/csi_kernel/rhino/adapter/csi_rhino.c b/platform/mcu/csky/csi/csi_kernel/rhino/adapter/csi_rhino.c
+index 21ede28..c9afeb6 100644
+--- a/platform/mcu/csky/csi/csi_kernel/rhino/adapter/csi_rhino.c
++++ b/platform/mcu/csky/csi/csi_kernel/rhino/adapter/csi_rhino.c
+@@ -28,6 +28,9 @@
+ #include <csi_config.h>
+ #include <soc.h>
+ 
++#include <mm.h>
++#include <umm_heap.h>
++
+ extern uint32_t dump_mmleak(void);
+ 
+ #define AUTORUN  1
+@@ -1270,7 +1273,7 @@ void *csi_kernel_malloc(int32_t size, void *caller)
+     void *ret;
+ 
+     csi_kernel_sched_suspend();
+-    ret = krhino_mm_alloc(size);
++    ret = mm_malloc(USR_HEAP, size, caller);
+     csi_kernel_sched_resume(0);
+     return ret;
+ }
+@@ -1278,7 +1281,7 @@ void *csi_kernel_malloc(int32_t size, void *caller)
+ void csi_kernel_free(void *ptr, void *caller)
+ {
+     csi_kernel_sched_suspend();
+-    krhino_mm_free(ptr);
++    mm_free(USR_HEAP, ptr, caller);
+     csi_kernel_sched_resume(0);
+ }
+ 
+@@ -1286,7 +1289,12 @@ void *csi_kernel_realloc(void *ptr, int32_t size, void *caller)
+ {
+     void *new_ptr;
+ 
+-    new_ptr = krhino_mm_realloc(ptr, size);
++    new_ptr = csi_kernel_malloc(size, caller);
++
++    if (ptr) {
++        memcpy(new_ptr, ptr, size);
++        csi_kernel_free(ptr, caller);
++    }
+ 
+     return new_ptr;
+ }
+diff --git a/platform/mcu/csky/csi/csi_kernel/rhino/driver/hook_impl.c b/platform/mcu/csky/csi/csi_kernel/rhino/driver/hook_impl.c
+index da9788f..183400d 100644
+--- a/platform/mcu/csky/csi/csi_kernel/rhino/driver/hook_impl.c
++++ b/platform/mcu/csky/csi/csi_kernel/rhino/driver/hook_impl.c
+@@ -32,8 +32,8 @@ void krhino_init_hook(void)
+     soc_hw_timer_init();
+ #endif
+ 
+-    /* auto define heap size */
+-    g_mm_region[0].len = (uint32_t)(&__heap_end) - (uint32_t)(&__heap_start);
++//    /* auto define heap size */
++//    g_mm_region[0].len = (uint32_t)(&__heap_end) - (uint32_t)(&__heap_start);
+ }
+ 
+ void krhino_start_hook(void)
+diff --git a/platform/mcu/csky/csky.mk b/platform/mcu/csky/csky.mk
+index 4d9b4d9..c5e1da1 100644
+--- a/platform/mcu/csky/csky.mk
++++ b/platform/mcu/csky/csky.mk
+@@ -84,7 +84,8 @@ GLOBAL_INCLUDES += csi/csi_core/include \
+                    csi/csi_kernel/include   \
+                    csi/csi_kernel/rhino/driver   \
+                    csi/libs/include   \
+-                   hal
++                   hal \
++                   libs/include
+ 
+ ifeq ($(HOST_CHIP), zx297100)
+ GLOBAL_DEFINES += CONFIG_HAVE_ICU
+@@ -150,7 +151,19 @@ $(NAME)_SOURCES += csi/csi_driver/csky/common/dw_spi.c \
+                    csi/csi_driver/csky/ch2201/trap_c.c \
+                    csi/csi_driver/csky/ch2201/ck_sys_freq.c \
+                    csi/csi_driver/csky/ch2201/novic_irq_tbl.c \
+-                   csi/libs/libc/malloc.c
++                   csi/libs/libc/malloc.c \
++                   libs/mm/dq_addlast.c \
++                   libs/mm/dq_rem.c \
++                   libs/mm/lib_mallinfo.c \
++                   libs/mm/mm_addfreechunk.c \
++                   libs/mm/mm_free.c \
++                   libs/mm/mm_initialize.c \
++                   libs/mm/mm_leak.c \
++                   libs/mm/mm_mallinfo.c \
++                   libs/mm/mm_malloc.c \
++                   libs/mm/mm_size2ndx.c
++
++
+ #ifeq ($(LWIP),1)
+ $(NAME)_SOURCES += csi/drivers/eth/csi_eth_enc28j60.c
+ #endif
+diff --git a/platform/mcu/csky/include/csi_config.h b/platform/mcu/csky/include/csi_config.h
+index 67f02f1..30d3018 100755
+--- a/platform/mcu/csky/include/csi_config.h
++++ b/platform/mcu/csky/include/csi_config.h
+@@ -12,6 +12,7 @@
+ #define CONFIG_SEPARATE_IRQ_SP 1
+ #define CONFIG_ARCH_INTERRUPTSTACK 600
+ #define CONFIG_MM_KERNEL_HEAPSIZE 32768
++#define CONFIG_MM_DETECT_ERROR 1
+ #ifdef WITH_SAL
+ #define CONFIG_NETIF_WIFI     1
+ #endif
