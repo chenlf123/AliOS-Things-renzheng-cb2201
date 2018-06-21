@@ -20,6 +20,7 @@ endif
 ifeq ($(SAL),1)
 $(NAME)_COMPONENTS  += sal sal.wifi.esp8266
 GLOBAL_DEFINES += WITH_SAL
+$(NAME)_SOURCES := cli/uart_config.c
 endif
 
 GLOBAL_DEFINES += CONFIG_AOS_KV_MULTIPTN_MODE
@@ -53,7 +54,7 @@ GLOBAL_LDFLAGS += -mcpu=ck802
 $(NAME)_PREBUILT_LIBRARY += ./csi/csi_driver/csky/common/tee/ck802/libcsiteeca.a
 $(NAME)_INCLUDE := csi/csi_driver/include
 
-$(NAME)_SOURCES := hal/uart.c
+$(NAME)_SOURCES += hal/uart.c
 $(NAME)_SOURCES += aos/aos.c \
                    ../../arch/csky/cskyv2-l/cpu_impl.c \
                    ../../arch/csky/cskyv2-l/port_s_novic.S \

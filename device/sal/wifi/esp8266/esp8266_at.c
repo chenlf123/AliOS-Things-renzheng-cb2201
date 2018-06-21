@@ -264,6 +264,39 @@ static int netm_uart_write(const char *buf, uint32_t nbytes)
     return nbytes;
 }
 
+int netm_uart_config(uint32_t baud,
+                     uint8_t databits,
+                     uint8_t stopbits,
+                     uint8_t parity,
+                     uint8_t flow_control,
+                     uint8_t writetoflash
+                    )
+{
+    int ret = -1;
+    netm_msg_t cmd;
+    netm_msg_t resp;
+
+    memset(&cmd, 0, sizeof(cmd));
+    memset(&resp, 0, sizeof(resp));
+
+    cmd.cmd      = AT_CMD_UART_CONFIG;
+    cmd.timeout  = 2000;
+
+    snprintf(cmd.param, 64, "%d,%d,%d,%d,%d\r\n", baud, databits, stopbits, parity, flow_control);
+
+    ret = at_exec_command(&cmd, &resp);
+
+    if (ret == 0) {
+        if (resp.result == 1) {
+            return 0;
+        } else if (resp.result == -1) {
+            return -1;
+        }
+    }
+
+    return ret;
+}
+
 int netm_softreset(void)
 {
     int ret = -1;
@@ -680,6 +713,7 @@ static int process_at_resp_event(char *line, int line_len, rdata_cb recv_handle_
             LOGE(TAG, "socket[%d] recv %d data", id, data_len);
             return -1;
         }
+
         memset(recv_buf, 0, sizeof(recv_buf));
         //memcpy data to app_buf
         //LOGD(TAG, "id = %d, prefix =%d, data_len =%d", id, prefix_len, data_len);
@@ -886,6 +920,9 @@ static int process_at_resp_cmd(char *line, int line_len)
         case AT_CMD_UART_CONFIG :
             if (strcmp(line, "OK") == 0) {
                 netm_resp_msg.result = 1;
+                end = 1;
+            } else if (strcmp(line, "ERROR") == 0) {
+                netm_resp_msg.result = 0;
                 end = 1;
             }
 
@@ -1258,6 +1295,7 @@ static void netm_task(void *arg)
         }
     }/* while */
 }
+extern void esp8266_uart_config(void);
 
 int netm_init(void)
 {
@@ -1268,6 +1306,8 @@ int netm_init(void)
     if (ret != 0) {
         return ret;
     }
+
+    esp8266_uart_config();
 
     g_cmd_mutex = csi_kernel_mutex_new();
 

@@ -2,6 +2,7 @@
  * Copyright (C) 2015-2017 Alibaba Group Holding Limited
  */
 
+#include <ctype.h>
 #include <aos/aos.h>
 #include <k_api.h>
 #include <aos/kernel.h>
@@ -25,7 +26,7 @@ hr_timer_t soc_hr_hw_cnt_get(void)
     return 0;
 }
 #endif
-#define HEAP_BUFFER_SIZE 1024*61
+#define HEAP_BUFFER_SIZE 1024*58
 uint8_t g_heap_buf[HEAP_BUFFER_SIZE];
 k_mm_region_t g_mm_region[] = {{g_heap_buf, HEAP_BUFFER_SIZE}};
 int           g_region_num  = sizeof(g_mm_region) / sizeof(k_mm_region_t);
@@ -51,11 +52,24 @@ void board_cli_init(void)
     kinit.argv = NULL;
     kinit.cli_enable = 1;
 }
+
+extern int netm_uart_config(uint32_t baud,
+                            uint8_t databits,
+                            uint8_t stopbits,
+                            uint8_t parity,
+                            uint8_t flow_control,
+                            uint8_t writetoflash
+                           );
+
+
 void sys_init_func(void)
 {
     //test_case_task_start();
     hal_init();
     board_cli_init();
+
+//    netm_uart_config(750000, 8, 1, 0, 0, 1);
+
     aos_kernel_init(&kinit);
 }
 

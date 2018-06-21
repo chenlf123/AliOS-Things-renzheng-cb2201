@@ -160,15 +160,15 @@ typedef struct {
     int stat;
 } regs_stat_resp_t;
 
-#define NETM_SOCKET_NUM 5
+#define NETM_SOCKET_NUM 1
 
 #define FRONT 1
 #define BACK  0
 #define NO_WAIT 0
 #define WAIT_FOREVER  -1
 #define SKTPT_SOCKET_OFFSET     34
-#define CONFIG_NETM_RDBUFSIZE   4096
-#define CONFIG_NETM_BAUD        115200
+#define CONFIG_NETM_RDBUFSIZE   8192
+#define CONFIG_NETM_BAUD        750000
 #define LINE_LEN 128
 #define ARRAY_SIZE(array) (sizeof(array)/sizeof(array[0]))
 
