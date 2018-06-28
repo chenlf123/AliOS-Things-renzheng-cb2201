@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define AOS_START_STACK 768
+#define AOS_START_STACK 1024
 extern void hal_init(void);
 
 ktask_t *g_aos_init;

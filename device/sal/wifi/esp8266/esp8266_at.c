@@ -1339,7 +1339,7 @@ int netm_init(void)
 
     LOGD(TAG, "start at_esp8266 task");
 #ifndef AOS_NO_WIFI
-    status = csi_kernel_task_new(netm_task, "at_esp8266", NULL, KPRIO_NORMAL_BELOW0, 0, NULL, 848, &tid);
+    status = csi_kernel_task_new(netm_task, "at_esp8266", NULL, KPRIO_NORMAL_BELOW0, 0, NULL, 1024, &tid);
 #endif
 
     if (status != 0) {
